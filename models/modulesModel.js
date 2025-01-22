@@ -6,5 +6,6 @@ const modulesSchema = new mongoose.Schema({
   difficulty: {type: String, default: ""},
 })
 
-const modulesModel = new mongoose.Model('Module',regionSchema);
+const modulesModel = new mongoose.Model('Module',modulesSchema);
 module.exports = modulesModel;
+
