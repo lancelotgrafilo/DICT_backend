@@ -1,9 +1,11 @@
 const mongoose = require("mongoose");
 
-const moduleSchema = new mongoose.Schema({
+const modulesSchema = new mongoose.Schema({
   module_name: {type: String, default: ""},
-
+  module_description: {type: String, default: ""},
+  difficulty: {type: String, default: ""},
 })
 
-const moduleModel = new mongoose.Model('Module',regionSchema);
-module.exports = moduleModel;
+const modulesModel = new mongoose.Model('Module',modulesSchema);
+module.exports = modulesModel;
+
