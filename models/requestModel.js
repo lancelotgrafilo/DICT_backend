@@ -22,4 +22,3 @@ const requestSchema = new mongoose.Schema({
 
 const requestModel = new mongoose.Model('Requests',requestSchema);
 module.exports = requestModel;
-
