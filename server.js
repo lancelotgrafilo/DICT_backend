@@ -1,29 +1,23 @@
-// Importing required modules
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const cors = require('cors'); // Required for CORS
+const cors = require('cors');
 const connectDB = require('./config/db');
-const dotenv = require('dotenv').config(); // Environment variables
+require('dotenv').config();
 
 const app = express();
 
-// Middleware to parse JSON and URL-encoded bodies
 app.use(bodyParser.json());
-app.use(express.json()); // Parse JSON bodies
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Enable CORS for frontend communication
-app.use(cors({
-  origin: 'https://egrade-frontend.onrender.com', // Your frontend URL deployed on Render
-  methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'], // Allowed methods
-  credentials: true // Allow cookies or auth headers if needed
-}));
+connectDB();
 
-// MongoDB Connection
-connectDB(); // Call to connect to MongoDB
+// app.use("/api", require("./routes/activityRoute"));
+app.use("/api", require("./routes/adminRoute"));
+// app.use("/api", require("./routes/moduleRoute"));
+// app.use("/api", require("./routes/requestRoute"));
 
-// Start the server and listen on the specified port
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
