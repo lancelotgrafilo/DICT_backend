@@ -18,7 +18,7 @@ const adminSchema = Joi.object({
   last_name: Joi.string().required(),
   first_name: Joi.string().required(),
   email_address: Joi.string().required(),
-  password: Joi.string(),
+  password: Joi.string().optional(), 
 });
 
 const validateRegistration = (data) => adminSchema.validate(data);
@@ -58,7 +58,7 @@ const postAdmin = asyncHandler(async (req, res) => {
     return res.status(201).json({ message: "New Admin Successfully Added" });
   } catch (err) {
     console.error('Error saving Admin:', err);
-    return res.status(500).json({ message: "Failed to add Admin", error: err });
+    return res.status(500).json({ message: "Failed to add Admin", error: err.message || err });
   }
 });
 
