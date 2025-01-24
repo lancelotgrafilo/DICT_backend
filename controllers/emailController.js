@@ -1,9 +1,9 @@
 const nodemailer = require('nodemailer');
 
-const sendEmailSuccess = async ({ email, plainPassword }) => {
-  console.log("sendEmailSuccess Initializing: ");
+const sendEmail = async ({ email, plainPassword }) => {
+  console.log("sendEmail Initializing: ");
   
-  console.log('Received in sendEmailSuccess:', { email, plainPassword });
+  console.log('Received in sendEmail:', { email, plainPassword });
   
   try {
     // Create a Nodemailer transporter
@@ -40,4 +40,4 @@ const sendEmailSuccess = async ({ email, plainPassword }) => {
   }
 };
 
-module.exports = { sendEmailSuccess };
+module.exports = { sendEmail };

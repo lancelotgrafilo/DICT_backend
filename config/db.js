@@ -5,10 +5,7 @@ require('dotenv').config();
 const connectDB = async () => {
   try {
     // Await the connection and store the connection object
-    const connection = await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    const connection = await mongoose.connect(process.env.MONGODB_URI);
 
     // Log the connected host
     console.log(`MongoDB Connected: ${connection.connection.host}`);
