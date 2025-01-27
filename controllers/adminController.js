@@ -64,9 +64,6 @@ const postAdmin = asyncHandler(async (req, res) => {
   }
 });
 
-
-
-
 module.exports = {
   postAdmin,
 };

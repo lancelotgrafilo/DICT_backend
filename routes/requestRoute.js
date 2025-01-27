@@ -6,7 +6,7 @@ const {
   printRequest
 } = require("../controllers/requestController");
 
-router.post('/post_request', postRequest)
+router.post('/post-request', postRequest)
 
 router.get('/print-requests', printRequest);
 

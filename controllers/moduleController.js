@@ -34,11 +34,23 @@ const postModule = asyncHandler(async (req, res) => {
     console.error('Error saving Module: ', err);
     return res.status(500).json({ message: "Failed to add Module", error: err.message || err });
   }
-
-
-
 });
 
+const getModules = asyncHandler(async (req, res) => {
+  try {
+    const modules = await ModuleModel.find();  // Fetch all modules from the database
+    if (modules.length === 0) {
+      return res.status(404).json({ message: "No modules found" });
+    }
+    return res.status(200).json(modules);  // Return the list of modules
+  } catch (err) {
+    console.error('Error fetching modules: ', err);
+    return res.status(500).json({ message: "Failed to fetch modules", error: err.message || err });
+  }
+});
+
+
 module.exports = {
-  postModule
+  postModule,
+  getModules
 };
