@@ -22,7 +22,7 @@ const requestSchema = Joi.object({
   classification: Joi.string().required(),
   modules_selected: Joi.array().required(),
 
-})
+});
 
 const validateRegistration = (data) => requestSchema.validate(data);
 
