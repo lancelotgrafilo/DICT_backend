@@ -5,6 +5,6 @@ const {
   postAdmin
 } = require('../controllers/adminController');
 
-router.post("/post_admin", postAdmin);
+router.post("/post-admin", postAdmin);
 
 module.exports = router;
