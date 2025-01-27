@@ -49,8 +49,54 @@ const getModules = asyncHandler(async (req, res) => {
   }
 });
 
+const deleteModule = asyncHandler(async (req, res) => {
+  const { id } = req.params;  // Get the module id from the route parameter
+
+  try {
+    const module = await ModuleModel.findByIdAndDelete(id);  // Delete the module by id
+
+    if (!module) {
+      return res.status(404).json({ message: "Module not found" });
+    }
+
+    console.log("Module Deleted: ", module);
+    return res.status(200).json({ message: "Module successfully deleted" });
+  } catch (err) {
+    console.error('Error deleting module: ', err);
+    return res.status(500).json({ message: "Failed to delete module", error: err.message || err });
+  }
+});
+
+const updateModule = asyncHandler(async (req, res) => {
+  const { id } = req.params;  // Get the module id from the route parameter
+  const { module_name, module_description, difficulty } = req.body;
+
+  try {
+    // Find and update the module by ID
+    const updatedModule = await ModuleModel.findByIdAndUpdate(id, {
+      module_name,
+      module_description,
+      difficulty
+    }, { new: true });
+
+    if (!updatedModule) {
+      return res.status(404).json({ message: "Module not found" });
+    }
+
+    console.log("Module Updated: ", updatedModule);
+    return res.status(200).json({
+      message: "Module successfully updated",
+      updatedModule
+    });
+  } catch (err) {
+    console.error('Error updating module: ', err);
+    return res.status(500).json({ message: "Failed to update module", error: err.message || err });
+  }
+});
 
 module.exports = {
   postModule,
-  getModules
+  getModules,
+  deleteModule,
+  updateModule
 };
