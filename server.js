@@ -13,10 +13,12 @@ app.use(express.urlencoded({ extended: true }));
 
 connectDB();
 
+app.use("/api", require("./routes/loginRoute"));
+
 // app.use("/api", require("./routes/activityRoute"));
 app.use("/api", require("./routes/adminRoute"));
 app.use("/api", require("./routes/moduleRoute"));
-// app.use("/api", require("./routes/requestRoute"));
+app.use("/api", require("./routes/requestRoute"));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
