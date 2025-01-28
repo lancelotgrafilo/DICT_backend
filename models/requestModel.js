@@ -19,7 +19,7 @@ const requestSchema = new mongoose.Schema({
   last_name: { type: String, required: true },
   first_name: { type: String, required: true},
   middle_name: { type: String, required: true},
-  extension_name: { type: String, required: true },
+  extension_name: { type: String, required: false, default: '' },
   gender: { type: String, required: true },
   address: { type: String, required: true },
   email_address: { type: String, required: true },
@@ -28,7 +28,6 @@ const requestSchema = new mongoose.Schema({
   department: { type: String, required: true },
   position: { type: String, required: true },
   date_and_time: { type: [preferred_date_and_time], required: true },
-  classification: { type: String, required: true },
   modules_selected: { type: [modulesSchema], default: [] },
   createdAt: { type: Date, default: Date.now },
 }, { collection: 'Requests'});
