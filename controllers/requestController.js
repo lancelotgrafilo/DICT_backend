@@ -8,7 +8,7 @@ const requestSchema = Joi.object({
   last_name: Joi.string().required(),
   first_name: Joi.string().required(),
   middle_name: Joi.string().required(),
-  extension_name: Joi.string().allow(""),
+  extension_name: Joi.string().allow(""), 
   gender: Joi.string().required(),
   address: Joi.string().required(),
   email_address: Joi.string().email().required(),
@@ -26,7 +26,6 @@ const requestSchema = Joi.object({
       })
     )
     .required(),
-  classification: Joi.string().required(),
   modules_selected: Joi.array()
     .items(
       Joi.object({
@@ -44,8 +43,8 @@ const validateRequest = (data) => requestSchema.validate(data);
 // POST Request Handler
 const postRequest = asyncHandler(async (req, res) => {
   const { error } = validateRequest(req.body);
-
   if (error) {
+    console.error("Validation Error: ", error.details);  // Log the details of the error
     return res.status(400).json({ message: error.details[0].message });
   }
 
@@ -63,7 +62,6 @@ const postRequest = asyncHandler(async (req, res) => {
     department,
     position,
     date_and_time,
-    classification,
     modules_selected,
   } = req.body;
 
@@ -81,7 +79,6 @@ const postRequest = asyncHandler(async (req, res) => {
     department,
     position,
     date_and_time,
-    classification,
     modules_selected,
   });
 
