@@ -8,60 +8,89 @@ const requestSchema = Joi.object({
   last_name: Joi.string().required(),
   first_name: Joi.string().required(),
   middle_name: Joi.string().required(),
-  extension_name: Joi.string(),
+  extension_name: Joi.string().allow(""),
   gender: Joi.string().required(),
   address: Joi.string().required(),
-  email_address: Joi.string().required(),
+  email_address: Joi.string().email().required(),
   contact_number: Joi.string().required(),
   organization_name: Joi.string().required(),
   department: Joi.string().required(),
   position: Joi.string().required(),
-  date: Joi.string().required(),
-  time: Joi.string().required(),
-  total_hours: Joi.number().required(),
+  date_and_time: Joi.array()
+    .items(
+      Joi.object({
+        date: Joi.string().required(),
+        start_time: Joi.string().required(),
+        end_time: Joi.string().required(),
+        total_hours: Joi.number().required()
+      })
+    )
+    .required(),
   classification: Joi.string().required(),
-  modules_selected: Joi.array().required(),
-
+  modules_selected: Joi.array()
+    .items(
+      Joi.object({
+        module_name: Joi.string().required(),
+        module_description: Joi.string().allow(""),
+        difficulty: Joi.string().allow("")
+      })
+    )
+    .required(),
 });
 
-const validateRegistration = (data) => requestSchema.validate(data);
+// Function to validate the request data
+const validateRequest = (data) => requestSchema.validate(data);
 
+// POST Request Handler
 const postRequest = asyncHandler(async (req, res) => {
-  const { error } = validateRegistration(req.body);
+  const { error } = validateRequest(req.body);
+
   if (error) {
     return res.status(400).json({ message: error.details[0].message });
   }
 
-  const { salutation, last_name, first_name, middle_name, extension_name, gender, address, email_address, contact_number, organization_name, department, position, date, time, total_hours, classification, modules_selected } = req.body;
-
-  const request = new RequestModel({ 
+  const {
     salutation,
-    last_name, 
-    first_name, 
+    last_name,
+    first_name,
     middle_name,
     extension_name,
     gender,
     address,
-    email_address, 
+    email_address,
     contact_number,
     organization_name,
     department,
     position,
-    date,
-    time, 
-    total_hours,
+    date_and_time,
+    classification,
+    modules_selected,
+  } = req.body;
+
+  const request = new RequestModel({
+    salutation,
+    last_name,
+    first_name,
+    middle_name,
+    extension_name,
+    gender,
+    address,
+    email_address,
+    contact_number,
+    organization_name,
+    department,
+    position,
+    date_and_time,
     classification,
     modules_selected,
   });
 
   try {
     await request.save();
-
-    console.log("New Request Saved: ", request);
-    return res.status(201).json({ message: "New Request Successfully Added" });
+    return res.status(201).json({ message: "New Request Successfully Added", data: request });
   } catch (err) {
-    console.error('Error saving Admin:', err);
-    return res.status(500).json({ message: "Failed to add Request", error: err.message || err });
+    console.error("Error saving Request:", err);
+    return res.status(500).json({ message: "Failed to add Request", error: err.message });
   }
 });
 
