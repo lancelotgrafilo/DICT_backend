@@ -104,6 +104,50 @@ const getRequest = asyncHandler(async (req, res) => {
   }
 });
 
+// Accept request
+const acceptRequest = asyncHandler(async (req, res) => {
+  try {
+    const requestId = req.params.id; // Get the request ID from the URL parameter
+
+    // Find the request by ID and update its status to "accepted"
+    const updatedRequest = await RequestModel.findByIdAndUpdate(
+      requestId,
+      { status: "accepted" },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedRequest) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    res.status(200).json(updatedRequest);
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
+// Reject request
+const rejectRequest = asyncHandler(async (req, res) => {
+  try {
+    const requestId = req.params.id; // Get the request ID from the URL parameter
+
+    // Find the request by ID and update its status to "rejected"
+    const updatedRequest = await RequestModel.findByIdAndUpdate(
+      requestId,
+      { status: "rejected" },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedRequest) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    res.status(200).json(updatedRequest);
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
 const printRequest = asyncHandler(async (req, res) => {
   try {
     console.log("Start processing request to generate Excel file");
@@ -170,5 +214,7 @@ const printRequest = asyncHandler(async (req, res) => {
 module.exports = {
   postRequest,
   printRequest,
-  getRequest
+  getRequest,
+  acceptRequest,
+  rejectRequest
 };
