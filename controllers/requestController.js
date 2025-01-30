@@ -16,6 +16,7 @@ const requestSchema = Joi.object({
   organization_name: Joi.string().required(),
   department: Joi.string().required(),
   position: Joi.string().required(),
+  region: Joi.string().required(),
   date_and_time: Joi.array()
     .items(
       Joi.object({
@@ -63,6 +64,7 @@ const postRequest = asyncHandler(async (req, res) => {
     organization_name,
     department,
     position,
+    region,
     date_and_time,
     modules_selected,
   } = req.body;
@@ -80,6 +82,7 @@ const postRequest = asyncHandler(async (req, res) => {
     organization_name,
     department,
     position,
+    region,
     date_and_time,
     modules_selected,
     status: "pending", // Default status
@@ -135,6 +138,27 @@ const rejectRequest = asyncHandler(async (req, res) => {
     const updatedRequest = await RequestModel.findByIdAndUpdate(
       requestId,
       { status: "rejected" },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedRequest) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    res.status(200).json(updatedRequest);
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
+const doneRequest = asyncHandler(async (req, res) => {
+  try {
+    const requestId = req.params.id; // Get the request ID from the URL parameter
+
+    // Find the request by ID and update its status to "rejected"
+    const updatedRequest = await RequestModel.findByIdAndUpdate(
+      requestId,
+      { status: "done" },
       { new: true } // Return the updated document
     );
 
@@ -216,5 +240,6 @@ module.exports = {
   printRequest,
   getRequest,
   acceptRequest,
-  rejectRequest
+  rejectRequest,
+  doneRequest
 };

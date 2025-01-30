@@ -27,6 +27,7 @@ const requestSchema = new mongoose.Schema({
   organization_name: { type: String, required: true },
   department: { type: String, required: true },
   position: { type: String, required: true },
+  region: { type: String, required: true },
   date_and_time: { type: [preferred_date_and_time], required: true },
   modules_selected: { type: [modulesSchema], default: [] },
   createdAt: { type: Date, default: Date.now }, // Timestamp when request is created

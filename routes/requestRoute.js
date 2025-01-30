@@ -6,7 +6,8 @@ const {
   printRequest,
   getRequest,
   acceptRequest,
-  rejectRequest
+  rejectRequest,
+  doneRequest
 } = require("../controllers/requestController");
 
 router.post('/post-request', postRequest);
@@ -17,6 +18,6 @@ router.get('/get-requests', getRequest);
 
 router.patch("/accept-request/:id", acceptRequest);
 router.patch('/reject-request/:id', rejectRequest);
-
+router.patch('/done-request/:id', doneRequest);
 
 module.exports = router;
