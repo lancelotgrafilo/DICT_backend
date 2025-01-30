@@ -3,12 +3,15 @@ const router = express.Router();
 
 const {
   postRequest,
-  printRequest
+  printRequest,
+  getRequest
 } = require("../controllers/requestController");
 
-router.post('/post-request', postRequest)
+router.post('/post-request', postRequest);
 
 router.get('/print-requests', printRequest);
+
+router.get('/get-requests', getRequest);
 
 
 module.exports = router;

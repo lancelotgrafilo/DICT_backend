@@ -2,9 +2,9 @@ const { date, required } = require('joi');
 const mongoose = require('mongoose');
 
 const modulesSchema = new mongoose.Schema({
-  module_name: {type: String, default: ""},
-  module_description: {type: String, default: ""},
-  difficulty: {type: String, default: ""}
+  module_name: { type: String, default: "" },
+  module_description: { type: String, default: "" },
+  difficulty: { type: String, default: "" }
 });
 
 const preferred_date_and_time = new mongoose.Schema({
@@ -17,8 +17,8 @@ const preferred_date_and_time = new mongoose.Schema({
 const requestSchema = new mongoose.Schema({
   salutation: { type: String, required: true },
   last_name: { type: String, required: true },
-  first_name: { type: String, required: true},
-  middle_name: { type: String, required: true},
+  first_name: { type: String, required: true },
+  middle_name: { type: String, required: true },
   extension_name: { type: String, required: false, default: '' },
   gender: { type: String, required: true },
   address: { type: String, required: true },
@@ -29,8 +29,10 @@ const requestSchema = new mongoose.Schema({
   position: { type: String, required: true },
   date_and_time: { type: [preferred_date_and_time], required: true },
   modules_selected: { type: [modulesSchema], default: [] },
-  createdAt: { type: Date, default: Date.now },
-}, { collection: 'Requests'});
+  createdAt: { type: Date, default: Date.now }, // Timestamp when request is created
+  status: { type: String, default: "pending" }, // Default status
+  statusUpdatedAt: { type: Date, default: null } // Timestamp when status is updated
+}, { collection: 'Requests' });
 
-const requestModel = new mongoose.model('Requests',requestSchema);
+const requestModel = mongoose.model('Requests', requestSchema);
 module.exports = requestModel;
