@@ -6,7 +6,6 @@ const moduleSchema = Joi.object({
   module_name: Joi.string().required(),
   module_description: Joi.string().required(),
   difficulty: Joi.string().required(),
-  
 });
 
 const validateRegistration = (data) => moduleSchema.validate(data);
