@@ -18,6 +18,7 @@ const adminSchema = Joi.object({
   last_name: Joi.string().required(),
   first_name: Joi.string().required(),
   email_address: Joi.string().required(),
+  region: Joi.string().required(),
   role: Joi.string().required(),
   password: Joi.string().optional(), 
 });
@@ -30,7 +31,7 @@ const postAdmin = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: error.details[0].message });
   }
 
-  const { last_name, first_name, email_address, role } = req.body;
+  const { last_name, first_name, email_address, region, role } = req.body;
 
   const existingAdmin = await AdminModel.findOne({ email_address });
   if (existingAdmin) {
@@ -43,7 +44,8 @@ const postAdmin = asyncHandler(async (req, res) => {
   const admin = new AdminModel({ 
     last_name, 
     first_name, 
-    email_address, 
+    email_address,
+    region, 
     role,
     password: hashedPassword, 
   });
