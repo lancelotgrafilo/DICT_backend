@@ -1,3 +1,4 @@
+// requestModel.js
 const { date, required } = require('joi');
 const mongoose = require('mongoose');
 
@@ -30,9 +31,10 @@ const requestSchema = new mongoose.Schema({
   region: { type: String, required: true },
   date_and_time: { type: [preferred_date_and_time], required: true },
   modules_selected: { type: [modulesSchema], default: [] },
-  createdAt: { type: Date, default: Date.now }, // Timestamp when request is created
-  status: { type: String, default: "pending" }, // Default status
-  statusUpdatedAt: { type: Date, default: null } // Timestamp when status is updated
+  createdAt: { type: Date, default: Date.now }, 
+  status: { type: String, default: "pending" }, 
+  statusUpdatedAt: { type: Date, default: null },
+  pdfFile: { type: String, default: null },
 }, { collection: 'Requests' });
 
 const requestModel = mongoose.model('Requests', requestSchema);

@@ -1,18 +1,17 @@
+// requestRoute.js
 const express = require("express");
 const router = express.Router();
+const { upload } = require("../middlewares/uploadMiddleware");
 
 const {
   postRequest,
-  printRequest,
   getRequest,
   acceptRequest,
   rejectRequest,
   doneRequest
 } = require("../controllers/requestController");
 
-router.post('/post-request', postRequest);
-
-router.get('/print-requests', printRequest);
+router.post('/post-request', upload.single('pdfFile'), postRequest);
 
 router.get('/get-requests', getRequest);
 
