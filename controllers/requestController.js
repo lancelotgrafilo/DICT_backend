@@ -40,6 +40,7 @@ const requestSchema = Joi.object({
     .required(),
   status: Joi.string().valid("pending", "accepted", "rejected", "done").default("pending"), // Default status
   statusUpdatedAt: Joi.date().allow(null).default(null), // Timestamp for status update
+  pdfFile: Joi.string().required(),
 });
 
 // Function to validate the request data
@@ -47,60 +48,78 @@ const validateRequest = (data) => requestSchema.validate(data);
 
 // POST Request Handler
 const postRequest = asyncHandler(async (req, res) => {
-  const { error } = validateRequest(req.body);
-  if (error) {
-    console.error("Validation Error: ", error.details);
-    return res.status(400).json({ message: error.details[0].message });
-  }
-
-  // Validate file type
-  if (req.file && path.extname(req.file.originalname).toLowerCase() !== '.pdf') {
-    return res.status(400).json({ message: "Only PDF files are allowed" });
-  }
-
-  const {
-    salutation,
-    last_name,
-    first_name,
-    middle_name,
-    extension_name,
-    gender,
-    address,
-    email_address,
-    contact_number,
-    organization_name,
-    department,
-    position,
-    region,
-    date_and_time,
-    modules_selected,
-  } = req.body;
-
-  // Handle the uploaded PDF file
-  const pdfFilePath = req.file ? req.file.path : null; // Get the file path from multer
-
-  const request = new RequestModel({
-    salutation,
-    last_name,
-    first_name,
-    middle_name,
-    extension_name,
-    gender,
-    address,
-    email_address,
-    contact_number,
-    organization_name,
-    department,
-    position,
-    region,
-    date_and_time,
-    modules_selected,
-    status: "pending", // Default status
-    statusUpdatedAt: null, // Initially null
-    pdfFile: pdfFilePath, // Save the file path in the database
-  });
-
   try {
+    // Parse JSON strings back into arrays/objects
+    let date_and_time = [];
+    let modules_selected = [];
+
+    try {
+      date_and_time = JSON.parse(req.body.date_and_time || '[]');
+      modules_selected = JSON.parse(req.body.modules_selected || '[]');
+    } catch (parseError) {
+      console.error("Error parsing JSON:", parseError);
+      return res.status(400).json({ message: "Invalid JSON format in request payload" });
+    }
+
+    // Validate the parsed data
+    const parsedBody = {
+      ...req.body,
+      date_and_time,
+      modules_selected,
+      pdfFile: req.file ? req.file.path : "", // Set pdfFile to the file path or empty string
+    };
+
+    const { error } = validateRequest(parsedBody);
+    if (error) {
+      console.error("Validation Error: ", error.details);
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
+    // Ensure a PDF file was uploaded
+    if (!req.file) {
+      return res.status(400).json({ message: "PDF file is required" });
+    }
+
+    // Extract fields from the parsed body
+    const {
+      salutation,
+      last_name,
+      first_name,
+      middle_name,
+      extension_name,
+      gender,
+      address,
+      email_address,
+      contact_number,
+      organization_name,
+      department,
+      position,
+      region,
+    } = parsedBody;
+
+    // Create a new request document
+    const request = new RequestModel({
+      salutation,
+      last_name,
+      first_name,
+      middle_name,
+      extension_name,
+      gender,
+      address,
+      email_address,
+      contact_number,
+      organization_name,
+      department,
+      position,
+      region,
+      date_and_time,
+      modules_selected,
+      status: "pending", // Default status
+      statusUpdatedAt: null, // Initially null
+      pdfFile: req.file.path, // Save the file path in the database
+    });
+
+    // Save the request to the database
     await request.save();
     return res.status(201).json({ message: "New Request Successfully Added", data: request });
   } catch (err) {
