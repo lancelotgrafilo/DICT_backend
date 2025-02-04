@@ -18,6 +18,9 @@ dist-ssr/
 *.local
 .env
 
+# Uploaded files (to avoid committing uploaded files to the repository)
+uploads/
+
 # Editor directories and files
 .vscode/
 !.vscode/extensions.json
