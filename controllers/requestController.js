@@ -46,13 +46,11 @@ const requestSchema = Joi.object({
 // Function to validate the request data
 const validateRequest = (data) => requestSchema.validate(data);
 
-// POST Request Handler
 const postRequest = asyncHandler(async (req, res) => {
   try {
     // Parse JSON strings back into arrays/objects
     let date_and_time = [];
     let modules_selected = [];
-
     try {
       date_and_time = JSON.parse(req.body.date_and_time || '[]');
       modules_selected = JSON.parse(req.body.modules_selected || '[]');
@@ -79,6 +77,9 @@ const postRequest = asyncHandler(async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "PDF file is required" });
     }
+
+    // Preprocess the pdfFile field to store only the filename
+    const pdfFileName = req.file ? path.basename(req.file.path) : "";
 
     // Extract fields from the parsed body
     const {
@@ -116,11 +117,12 @@ const postRequest = asyncHandler(async (req, res) => {
       modules_selected,
       status: "pending", // Default status
       statusUpdatedAt: null, // Initially null
-      pdfFile: req.file.path, // Save the file path in the database
+      pdfFile: pdfFileName, // Save only the filename in the database
     });
 
     // Save the request to the database
     await request.save();
+
     return res.status(201).json({ message: "New Request Successfully Added", data: request });
   } catch (err) {
     console.error("Error saving Request:", err);
