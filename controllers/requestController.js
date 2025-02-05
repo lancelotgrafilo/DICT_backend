@@ -204,11 +204,33 @@ const doneRequest = asyncHandler(async (req, res) => {
   }
 });
 
+const cancelRequest = asyncHandler(async (req, res) => {
+  try {
+    const requestId = req.params.id; // Get the request ID from the URL parameter
+
+    // Find the request by ID and update its status to "rejected"
+    const updatedRequest = await RequestModel.findByIdAndUpdate(
+      requestId,
+      { status: "canceled" },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedRequest) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    res.status(200).json(updatedRequest);
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
 
 module.exports = {
   postRequest,
   getRequest,
   acceptRequest,
   rejectRequest,
-  doneRequest
+  doneRequest,
+  cancelRequest
 };
