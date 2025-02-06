@@ -4,6 +4,7 @@ const RequestModel = require("../models/requestModel");
 const Joi = require('joi');
 const path = require('path');
 const fs = require('fs');
+const { logTransaction } = require("../controllers/historyController");
 
 const requestSchema = Joi.object({
   salutation: Joi.string().required(),
@@ -123,6 +124,9 @@ const postRequest = asyncHandler(async (req, res) => {
     // Save the request to the database
     await request.save();
 
+    const transactionMessage = `New Request Added: Cybersecurity Awareness Request From ${region}`;
+    await logTransaction(transactionMessage);
+
     return res.status(201).json({ message: "New Request Successfully Added", data: request });
   } catch (err) {
     console.error("Error saving Request:", err);
@@ -144,6 +148,12 @@ const acceptRequest = asyncHandler(async (req, res) => {
   try {
     const requestId = req.params.id; // Get the request ID from the URL parameter
 
+    // Find the request by ID and retrieve the region field
+    const request = await RequestModel.findById(requestId, "region");
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
     // Find the request by ID and update its status to "accepted"
     const updatedRequest = await RequestModel.findByIdAndUpdate(
       requestId,
@@ -154,6 +164,10 @@ const acceptRequest = asyncHandler(async (req, res) => {
     if (!updatedRequest) {
       return res.status(404).json({ message: "Request not found" });
     }
+
+    // Log the transaction into the history collection
+    const transactionMessage = `Accepted Cybersecurity Awareness Request From ${request.region}`;
+    await logTransaction(transactionMessage);
 
     res.status(200).json(updatedRequest);
   } catch (err) {
@@ -166,6 +180,12 @@ const rejectRequest = asyncHandler(async (req, res) => {
   try {
     const requestId = req.params.id; // Get the request ID from the URL parameter
 
+    // Find the request by ID and retrieve the region field
+    const request = await RequestModel.findById(requestId, "region");
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
     // Find the request by ID and update its status to "rejected"
     const updatedRequest = await RequestModel.findByIdAndUpdate(
       requestId,
@@ -177,6 +197,10 @@ const rejectRequest = asyncHandler(async (req, res) => {
       return res.status(404).json({ message: "Request not found" });
     }
 
+    // Log the transaction into the history collection
+    const transactionMessage = `Rejected Cybersecurity Awareness Request From ${request.region}`;
+    await logTransaction(transactionMessage);
+
     res.status(200).json(updatedRequest);
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
@@ -187,7 +211,13 @@ const doneRequest = asyncHandler(async (req, res) => {
   try {
     const requestId = req.params.id; // Get the request ID from the URL parameter
 
-    // Find the request by ID and update its status to "rejected"
+    // Find the request by ID and retrieve the region field
+    const request = await RequestModel.findById(requestId, "region");
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    // Update the request status to "done"
     const updatedRequest = await RequestModel.findByIdAndUpdate(
       requestId,
       { status: "done" },
@@ -198,8 +228,14 @@ const doneRequest = asyncHandler(async (req, res) => {
       return res.status(404).json({ message: "Request not found" });
     }
 
+    // Log the transaction into the history collection
+    const transactionMessage = `Completed Cybersecurity Awareness Request From ${request.region}`;
+    await logTransaction(transactionMessage);
+
+    // Respond with the updated request
     res.status(200).json(updatedRequest);
   } catch (err) {
+    console.error("Error completing request: ", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
@@ -207,6 +243,12 @@ const doneRequest = asyncHandler(async (req, res) => {
 const cancelRequest = asyncHandler(async (req, res) => {
   try {
     const requestId = req.params.id; // Get the request ID from the URL parameter
+
+    // Find the request by ID and retrieve the region field
+    const request = await RequestModel.findById(requestId, "region");
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
 
     // Find the request by ID and update its status to "rejected"
     const updatedRequest = await RequestModel.findByIdAndUpdate(
@@ -218,6 +260,10 @@ const cancelRequest = asyncHandler(async (req, res) => {
     if (!updatedRequest) {
       return res.status(404).json({ message: "Request not found" });
     }
+
+    // Log the transaction into the history collection
+    const transactionMessage = `Canceled Cybersecurity Awareness Request From ${request.region}`;
+    await logTransaction(transactionMessage);
 
     res.status(200).json(updatedRequest);
   } catch (err) {

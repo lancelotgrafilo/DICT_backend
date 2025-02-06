@@ -21,7 +21,6 @@ const postHistory = asyncHandler(async (req, res) => {
   }
 
   const { transaction } = req.body;
-
   const history = new HistoryModel({
     transaction,
   });
@@ -69,7 +68,29 @@ const getHistory = asyncHandler(async (req, res) => {
   }
 });
 
+// Helper function to log a transaction programmatically
+const logTransaction = async (transactionMessage) => {
+  try {
+    const { error } = validateRegistration({ transaction: transactionMessage });
+    if (error) {
+      console.error("Invalid transaction message: ", error.details[0].message);
+      throw new Error("Invalid transaction message");
+    }
+
+    const history = new HistoryModel({
+      transaction: transactionMessage,
+    });
+
+    await history.save();
+    console.log("Transaction Logged: ", history);
+  } catch (err) {
+    console.error("Failed to log transaction: ", err);
+    throw err; // Re-throw the error for further handling
+  }
+};
+
 module.exports = {
   postHistory,
   getHistory,
+  logTransaction, // Export the helper function for internal use
 };
