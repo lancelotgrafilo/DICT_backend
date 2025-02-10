@@ -5,6 +5,7 @@ const { upload } = require("../middlewares/uploadMiddleware");
 
 const {
   postRequest,
+  getRequestPdf,
   getRequest,
   acceptRequest,
   rejectRequest,
@@ -14,6 +15,7 @@ const {
 
 router.post('/post-request', upload.single('pdfFile'), postRequest);
 
+router.get('/get-pdf/:id', getRequestPdf);
 router.get('/get-requests', getRequest);
 
 router.patch("/accept-request/:id", acceptRequest);

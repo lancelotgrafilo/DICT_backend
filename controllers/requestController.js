@@ -6,6 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const { logTransaction } = require("../controllers/historyController");
 
+
 const requestSchema = Joi.object({
   salutation: Joi.string().required(),
   last_name: Joi.string().required(),
@@ -82,6 +83,12 @@ const postRequest = asyncHandler(async (req, res) => {
     // Preprocess the pdfFile field to store only the filename
     const pdfFileName = req.file ? path.basename(req.file.path) : "";
 
+
+    const pdfFilePath = req.file.path;
+    const pdfData = fs.readFileSync(pdfFilePath); // Read the file into memory
+    const pdfBuffer = Buffer.from(pdfData); // Convert to Buffer for MongoDB storage
+
+
     // Extract fields from the parsed body
     const {
       salutation,
@@ -118,7 +125,7 @@ const postRequest = asyncHandler(async (req, res) => {
       modules_selected,
       status: "pending", // Default status
       statusUpdatedAt: null, // Initially null
-      pdfFile: pdfFileName, // Save only the filename in the database
+      pdfFile: pdfBuffer, // Save only the filename in the database
     });
 
     // Save the request to the database
@@ -131,6 +138,27 @@ const postRequest = asyncHandler(async (req, res) => {
   } catch (err) {
     console.error("Error saving Request:", err);
     return res.status(500).json({ message: "Failed to add Request", error: err.message });
+  }
+});
+
+const getRequestPdf = asyncHandler(async (req, res) => {
+  try {
+    const requestId = req.params.id; // ID of the request
+    const request = await RequestModel.findById(requestId);
+
+    if (!request || !request.pdfFile) {
+      return res.status(404).json({ message: "PDF file not found" });
+    }
+
+    // Set response headers for file download
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="downloaded_file.pdf"`);
+
+    // Send the binary data as the response
+    return res.send(request.pdfFile);
+  } catch (err) {
+    console.error("Error retrieving PDF:", err);
+    return res.status(500).json({ message: "Failed to retrieve PDF", error: err.message });
   }
 });
 
@@ -274,9 +302,10 @@ const cancelRequest = asyncHandler(async (req, res) => {
 
 module.exports = {
   postRequest,
+  getRequestPdf,
   getRequest,
   acceptRequest,
   rejectRequest,
   doneRequest,
-  cancelRequest
+  cancelRequest,
 };
