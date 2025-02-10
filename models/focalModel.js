@@ -18,7 +18,7 @@ const focalSchema = new mongoose.Schema({
   focal_status: { type: String, required: true },
   role: { type: String, default: "focal" },
   password: { type: String },
-}, { collection: 'Admins'});
+}, { collection: 'Focals'});
 
 const focalModel = mongoose.model("Focals", focalSchema);
 module.exports = focalModel;

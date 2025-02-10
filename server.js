@@ -29,6 +29,7 @@ app.use("/api", require("./routes/moduleRoute"));
 app.use("/api", require("./routes/requestRoute"));
 app.use('/api', require('./routes/historyRoute'));
 app.use('/api', require("./routes/fileRoute"));
+app.use('/api', require("./routes/focalRoute"));
 
 
 const PORT = process.env.PORT || 5000;
