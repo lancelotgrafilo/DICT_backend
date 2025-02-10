@@ -34,7 +34,7 @@ const requestSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }, 
   status: { type: String, default: "pending" }, 
   statusUpdatedAt: { type: Date, default: null },
-  pdfFile: { type: String, default: null },
+  pdfFile: { type: Buffer, default: null },
 }, { collection: 'Requests' });
 
 const requestModel = mongoose.model('Requests', requestSchema);
