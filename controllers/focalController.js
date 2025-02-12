@@ -3,6 +3,8 @@ const bcrypt = require('bcryptjs');
 const FocalModel = require('../models/focalModel');
 const Joi = require('joi');
 const { sendEmail } = require('./emailController');
+const fs = require('fs');
+const path = require('path');
 
 // Helper: Generate a random password
 const generateRandomPassword = (length = 8) => {
@@ -24,9 +26,10 @@ const focalSchema = Joi.object({
   region: Joi.string().required(),
   position: Joi.string().required(),
   province: Joi.string().required(),
-  focal_status: Joi.string().required(),
+  focal_status: Joi.string().valid('PRIMARY', 'SECONDARY', 'THIRD').required(),
   role: Joi.string(),
   password: Joi.string().optional(),
+  pdfFile: Joi.string().required(),
 });
 
 const updateFocalSchema = Joi.object({
@@ -51,14 +54,41 @@ const validateUpdatePassword = validate(updatePasswordSchema);
 
 // POST: Create a new admin
 const postFocal = asyncHandler(async (req, res) => {
-  console.log("Request received:", req.body); 
-  
-  const { error } = validateRegistration(req.body);
+  console.log("Request received:", req.body);
+  console.log("Uploaded File:", req.file);
+
+  // Ensure a PDF file was uploaded
+  if (!req.file) {
+    return res.status(400).json({ message: "PDF file is required" });
+  }
+
+  // Combine req.body and req.file into a single parsedBody object
+  const parsedBody = {
+    ...req.body,
+    pdfFile: req.file ? req.file.path : "", // Set pdfFile to the file path or empty string
+  };
+  console.log("Parsed Body:", parsedBody);
+
+  // Validate the request body
+  const { error } = validateRegistration(parsedBody);
   if (error) {
-    console.error("Validation Error Details:", error.details); // Log full validation details
+    console.error("Validation Error Details:", error.details);
     return res.status(400).json({ message: error.details[0].message });
   }
 
+  // Read the file into a Buffer
+  const pdfFilePath = req.file.path;
+  let pdfBuffer;
+  try {
+    const pdfData = fs.readFileSync(pdfFilePath); // Read the file into memory
+    pdfBuffer = Buffer.from(pdfData); // Convert to Buffer
+    console.log("PDF Buffer Length:", pdfBuffer.length);
+  } catch (err) {
+    console.error("Error reading PDF file:", err);
+    return res.status(500).json({ message: "Failed to process PDF file", error: err.message });
+  }
+
+  // Destructure fields from parsedBody
   const {
     focal_number,
     last_name,
@@ -73,16 +103,19 @@ const postFocal = asyncHandler(async (req, res) => {
     position,
     province,
     focal_status,
-  } = req.body;
+  } = parsedBody;
 
+  // Check if email is already registered
   const existingAdmin = await FocalModel.findOne({ email_address });
   if (existingAdmin) {
     return res.status(400).json({ message: "Email already registered" });
   }
 
+  // Generate a random password and hash it
   const generatedPassword = generateRandomPassword();
   const hashedPassword = await bcrypt.hash(generatedPassword, 12);
 
+  // Create a new admin record
   const admin = new FocalModel({
     focal_number,
     last_name,
@@ -98,6 +131,7 @@ const postFocal = asyncHandler(async (req, res) => {
     province,
     focal_status,
     password: hashedPassword,
+    pdfFile: pdfBuffer, // Save the file as a Buffer
   });
 
   try {
