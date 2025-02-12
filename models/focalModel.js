@@ -18,6 +18,7 @@ const focalSchema = new mongoose.Schema({
   focal_status: { type: String, required: true },
   role: { type: String, default: "focal" },
   password: { type: String },
+  pdfFile: { type: Buffer, default: null },
 }, { collection: 'Focals'});
 
 const focalModel = mongoose.model("Focals", focalSchema);

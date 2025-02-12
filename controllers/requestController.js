@@ -83,7 +83,6 @@ const postRequest = asyncHandler(async (req, res) => {
     // Preprocess the pdfFile field to store only the filename
     const pdfFileName = req.file ? path.basename(req.file.path) : "";
 
-
     const pdfFilePath = req.file.path;
     const pdfData = fs.readFileSync(pdfFilePath); // Read the file into memory
     const pdfBuffer = Buffer.from(pdfData); // Convert to Buffer for MongoDB storage
