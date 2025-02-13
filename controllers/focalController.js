@@ -76,11 +76,17 @@ const postFocal = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: error.details[0].message });
   }
 
+  
+  // Ensure a PDF file was uploaded
+  if (!req.file) {
+    return res.status(400).json({ message: "PDF file is required" });
+  }
+
   // Read the file into a Buffer
   const pdfFilePath = req.file.path;
+  const pdfData = fs.readFileSync(pdfFilePath); // Read the file into memory
   let pdfBuffer;
   try {
-    const pdfData = fs.readFileSync(pdfFilePath); // Read the file into memory
     pdfBuffer = Buffer.from(pdfData); // Convert to Buffer
     console.log("PDF Buffer Length:", pdfBuffer.length);
   } catch (err) {
@@ -136,9 +142,11 @@ const postFocal = asyncHandler(async (req, res) => {
 
   try {
     await admin.save();
+
     await sendEmail({ email: email_address, plainPassword: generatedPassword });
-    console.log("New Admin Saved:", admin);
-    return res.status(201).json({ message: "New Admin Successfully Added" });
+    console.log("New Admin Focal Saved:", admin);
+
+    return res.status(201).json({ message: "New Admin Focal Successfully Added" });
   } catch (err) {
     console.error('Error saving Admin:', err);
     return res.status(500).json({ message: "Failed to add Admin", error: err.message || err });
