@@ -4,8 +4,9 @@ const ModuleModel = require('../models/modulesModel');
 
 const moduleSchema = Joi.object({
   module_name: Joi.string().required(),
+  duration: Joi.string().required(),
   module_description: Joi.string().required(),
-  difficulty: Joi.string().required(),
+  difficulty: Joi.string(),
 });
 
 const validateRegistration = (data) => moduleSchema.validate(data);
@@ -16,10 +17,11 @@ const postModule = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: error.details[0].message });
   }
 
-  const { module_name, module_description, difficulty } = req.body;
+  const { module_name, duration, module_description, difficulty } = req.body;
 
   const module = new ModuleModel({
     module_name,
+    duration,
     module_description,
     difficulty
   })
@@ -68,12 +70,13 @@ const deleteModule = asyncHandler(async (req, res) => {
 
 const updateModule = asyncHandler(async (req, res) => {
   const { id } = req.params;  // Get the module id from the route parameter
-  const { module_name, module_description, difficulty } = req.body;
+  const { module_name, duration, module_description, difficulty } = req.body;
 
   try {
     // Find and update the module by ID
     const updatedModule = await ModuleModel.findByIdAndUpdate(id, {
       module_name,
+      duration,
       module_description,
       difficulty
     }, { new: true });
