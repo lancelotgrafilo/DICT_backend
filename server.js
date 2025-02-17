@@ -30,6 +30,7 @@ app.use("/api", require("./routes/requestRoute"));
 app.use('/api', require('./routes/historyRoute'));
 app.use('/api', require("./routes/fileRoute"));
 app.use('/api', require("./routes/focalRoute"));
+app.use('/api', require(""));
 
 
 const PORT = process.env.PORT || 5000;
