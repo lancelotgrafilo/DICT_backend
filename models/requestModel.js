@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const modulesSchema = new mongoose.Schema({
   module_name: { type: String, default: "" },
   module_description: { type: String, default: "" },
-  difficulty: { type: String, default: "" }
+  level: { type: String, default: "" }
 });
 
 const preferred_date_and_time = new mongoose.Schema({
