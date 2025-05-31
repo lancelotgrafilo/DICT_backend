@@ -4,10 +4,11 @@ const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler');
 
 const AdminModel = require('../models/adminModel');
+const FocalModel = require("../models/focalModel");
 
 const postLogin = asyncHandler(async (req, res) => {
   const { email_address, password } = req.body;
-
+  
   let user;
   let role = '';
   const models = {
