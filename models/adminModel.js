@@ -7,7 +7,7 @@ const adminSchema = new mongoose.Schema({
   middle_name: { type: String, required: true},
   email_address: { type: String, required: true},
   region: { type: String, required: true },
-  role: { type: String, required: true },
+  role: { type: String, default: "admin" },
   password: { type: String },
 }, { collection: 'Admins'});
 
